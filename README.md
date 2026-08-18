@@ -8,7 +8,7 @@ Rather than flying spaceships with conventional arcade controls, New Worlds trea
 
 The project is currently in an early proof-of-concept stage, focused on validating the core flight and orbital mechanics.
 
-![Terra](screenshots/terra.png)![Venera](screenshots/venera.png)![Ares](screenshots/ares.png)![Aqua](screenshots/aqua.png)![Duma](screenshots/duma.png)![Mina](screenshots/mina.png)
+<!-- ![Terra](screenshots/terra.png)![Venera](screenshots/venera.png)![Ares](screenshots/ares.png)![Aqua](screenshots/aqua.png)![Duma](screenshots/duma.png)![Mina](screenshots/mina.png) -->
 
 ---
 
