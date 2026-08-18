@@ -1,0 +1,128 @@
+[gd_scene load_steps=16 format=3 uid="uid://de7qapkqfycxl"]
+
+[ext_resource type="Script" path="res://world.gd" id="1_e2im5"]
+[ext_resource type="PackedScene" uid="uid://c6lvr45hted2e" path="res://player/player.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://bcxh77tn1k6nk" path="res://worlds/world_1.png" id="3_cd6au"]
+[ext_resource type="Texture2D" uid="uid://cxl5cvsgyxcoe" path="res://level/target.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://c2kjg1ysjuv0k" path="res://worlds/moon_1.png" id="4_efya6"]
+[ext_resource type="Script" path="res://worlds/moon_1.gd" id="4_s4o5a"]
+[ext_resource type="Script" path="res://camera_2d.gd" id="5_04ysu"]
+[ext_resource type="AudioStream" uid="uid://ppt7fydq0dsm" path="res://player/rocket-thruster.mp3" id="6_ufk1l"]
+[ext_resource type="Script" path="res://level/target.gd" id="7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nbs08"]
+radius = 50.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6qwns"]
+radius = 50.0
+
+[sub_resource type="RectangleShape2D" id="7"]
+size = Vector2(16, 16)
+
+[sub_resource type="Gradient" id="Gradient_8h38i"]
+offsets = PackedFloat32Array(0, 0.906667, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.82, 0.82, 0.82, 0.82, 0, 0, 0, 0)
+
+[sub_resource type="Gradient" id="Gradient_iae8l"]
+colors = PackedColorArray(1, 1, 0.407843, 1, 0.972549, 0.537255, 0.152941, 1)
+
+[sub_resource type="GDScript" id="GDScript_w4qpx"]
+script/source = "extends CPUParticles2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_e2im5")
+
+[node name="World1" type="CharacterBody2D" parent="."]
+position = Vector2(0, 103)
+
+[node name="Sprite2D" type="Sprite2D" parent="World1"]
+texture = ExtResource("3_cd6au")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World1"]
+shape = SubResource("CircleShape2D_nbs08")
+
+[node name="Moon1" type="CharacterBody2D" parent="World1"]
+position = Vector2(0, -600.126)
+scale = Vector2(0.406547, 0.406547)
+floor_stop_on_slope = false
+script = ExtResource("4_s4o5a")
+
+[node name="Sprite2D" type="Sprite2D" parent="World1/Moon1"]
+texture = ExtResource("4_efya6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World1/Moon1"]
+shape = SubResource("CircleShape2D_6qwns")
+
+[node name="Target" type="Area2D" parent="World1/Moon1"]
+position = Vector2(0, -134.976)
+scale = Vector2(2.45974, 2.45974)
+script = ExtResource("7")
+
+[node name="Collision" type="CollisionShape2D" parent="World1/Moon1/Target"]
+shape = SubResource("7")
+
+[node name="Sprite2D" type="Sprite2D" parent="World1/Moon1/Target"]
+texture = ExtResource("4")
+
+[node name="TargetText" type="Label" parent="World1/Moon1/Target"]
+visible = false
+offset_left = 8.0
+offset_top = -24.0
+offset_right = 193.0
+offset_bottom = 28.0
+size_flags_horizontal = 2
+size_flags_vertical = 0
+text = "Rendezvous complete!"
+
+[node name="Player" parent="." instance=ExtResource("3")]
+position = Vector2(1.13687e-13, 1.13687e-13)
+scale = Vector2(0.527045, 0.523208)
+motion_mode = 1
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+scale = Vector2(1.82161, 3.14767)
+script = ExtResource("5_04ysu")
+
+[node name="Exhaust" type="CPUParticles2D" parent="Player"]
+position = Vector2(1.19209e-07, 0)
+emitting = false
+amount = 1000
+lifetime = 0.2
+speed_scale = 4.0
+randomness = 1.0
+lifetime_randomness = 1.0
+direction = Vector2(0, 0)
+spread = 20.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 100.0
+initial_velocity_max = 900.0
+scale_amount_min = 0.2
+scale_amount_max = 0.2
+color = Color(1, 1, 0.176471, 1)
+color_ramp = SubResource("Gradient_8h38i")
+color_initial_ramp = SubResource("Gradient_iae8l")
+hue_variation_min = 1.0
+hue_variation_max = 1.0
+script = SubResource("GDScript_w4qpx")
+
+[node name="RocketThruster" type="AudioStreamPlayer" parent="Player/Exhaust"]
+stream = ExtResource("6_ufk1l")
+
+[node name="PositionHistory" type="CPUParticles2D" parent="Player"]
+amount = 3600
+lifetime = 600.0
+direction = Vector2(0, 0)
+gravity = Vector2(0, 0)
+
+[connection signal="body_entered" from="World1/Moon1/Target" to="World1/Moon1/Target" method="_on_body_entered"]
