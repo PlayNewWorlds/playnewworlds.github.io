@@ -11,6 +11,8 @@ env:
   # GUT (Godot Unit Test) version. Pinned rather than "latest" since GUT
   # 9.5.0+ requires Godot 4.5+; bump this only alongside GODOT_VERSION.
   GUT_VERSION: v9.3.0
+  # The GitHub Pages repo this pipeline publishes the Web build to.
+  PAGES_REPO: PlayNewWorlds/playnewworlds.github.io
 
 permissions:
   contents: read
@@ -54,7 +56,7 @@ jobs:
         run: godot --headless --path . --import
 
       - name: Run tests
-        run: godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit
+        run: godot --headless --path . -s addons/gut/gut_cmdln.gd -gexit
 
   build:
     name: Build (Web export)
@@ -75,27 +77,36 @@ jobs:
           export GODOT_BIN="$(command -v godot)"
           ./export-web.sh
 
-      - name: Upload Pages artifact
+      - name: Publish to ${{ env.PAGES_REPO }}
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web
+        env:
+          PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+        run: |
+          set -euo pipefail
 
-  deploy:
-    name: Publish to GitHub Pages
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          if [[ -z "${PAGES_DEPLOY_TOKEN:-}" ]]; then
+            echo "PAGES_DEPLOY_TOKEN secret is not set - see README for setup." >&2
+            exit 1
+          fi
+
+          pages_dir="$(mktemp -d)"
+          git clone --depth 1 \
+            "https://x-access-token:${PAGES_DEPLOY_TOKEN}@github.com/${PAGES_REPO}.git" \
+            "$pages_dir"
+
+          # Replace the published repo's entire contents with this build -
+          # it's a generated artifact, nothing there is hand-maintained.
+          find "$pages_dir" -mindepth 1 -maxdepth 1 -not -name ".git" -exec rm -rf {} +
+          cp -r build/web/. "$pages_dir/"
+          touch "$pages_dir/.nojekyll"
+
+          cd "$pages_dir"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Build output unchanged, nothing to publish."
+            exit 0
+          fi
+          git commit -m "Publish build from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+          git push origin HEAD:master

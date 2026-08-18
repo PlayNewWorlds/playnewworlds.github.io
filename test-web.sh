@@ -28,4 +28,4 @@ fi
 
 "$GODOT_BIN" --headless --path "$SCRIPT_DIR" --import
 exec "$GODOT_BIN" --headless --path "$SCRIPT_DIR" \
-    -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit
+    -s addons/gut/gut_cmdln.gd -gexit
