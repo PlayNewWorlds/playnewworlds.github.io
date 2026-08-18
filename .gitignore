@@ -1,22 +1,5 @@
-# Godot 4+ specific ignores
+# Generated site content is committed directly by CI; this only
+# covers local Godot/editor cruft if this repo is ever opened in the
+# Godot editor by mistake.
 .godot/
-.import/
-
-# Export output (produced by scripts/export-web.sh)
 /build/
-
-# GUT (Godot Unit Test) - fetched by CI/scripts, not vendored
-/addons/
-
-# Imported translations (automatically generated from CSV files)
-*.translation
-
-# Mono-specific ignores
-.mono/
-data_*/
-
-# System/tool-specific ignores
-.vscode/
-
-# Rust (Bevy) build artifacts
-/target

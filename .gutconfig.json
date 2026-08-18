@@ -1,6 +1,0 @@
-{
-    "dirs": ["res://test/"],
-    "include_subdirs": true,
-    "should_exit": false,
-    "should_exit_on_success": false
-}
