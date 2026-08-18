@@ -1,5 +1,0 @@
-# Generated site content is committed directly by CI; this only
-# covers local Godot/editor cruft if this repo is ever opened in the
-# Godot editor by mistake.
-.godot/
-/build/
