@@ -99,7 +99,7 @@ desktop with a display.
 - **No `run/main_scene` shows up on a shallow `grep -A2
   "\[application\]"`** — it's further down the section, not right
   after the header. `grep -n "run/main_scene"` finds it
-  (`res://world.tscn`) directly; don't conclude it's unset from a
+  (`res://game.tscn`) directly; don't conclude it's unset from a
   truncated grep.
 
 ## Troubleshooting

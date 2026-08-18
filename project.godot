@@ -12,7 +12,7 @@ config_version=5
 
 config/name="The New Worlds"
 config/tags=PackedStringArray("2d", "physics")
-run/main_scene="res://world.tscn"
+run/main_scene="res://game.tscn"
 config/features=PackedStringArray("4.3")
 config/icon="res://icon.webp"
 

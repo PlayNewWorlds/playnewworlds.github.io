@@ -5,6 +5,9 @@
 # Export output (produced by scripts/export-web.sh)
 /build/
 
+# GUT (Godot Unit Test) - fetched by CI/scripts, not vendored
+/addons/
+
 # Imported translations (automatically generated from CSV files)
 *.translation
 

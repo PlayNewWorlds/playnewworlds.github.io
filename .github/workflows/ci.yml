@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.3.0
+  # GUT (Godot Unit Test) version. Pinned rather than "latest" since GUT
+  # 9.5.0+ requires Godot 4.5+; bump this only alongside GODOT_VERSION.
+  GUT_VERSION: v9.3.0
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint (gdlint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install gdtoolkit
+        run: pip install "gdtoolkit==4.*"
+
+      - name: Run gdlint
+        run: gdlint .
+
+  test:
+    name: Test (GUT)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+
+      - name: Install GUT
+        run: |
+          git clone --depth 1 --branch "$GUT_VERSION" https://github.com/bitwes/Gut.git /tmp/gut
+          mkdir -p addons
+          cp -r /tmp/gut/addons/gut addons/gut
+
+      - name: Import project
+        run: godot --headless --path . --import
+
+      - name: Run tests
+        run: godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test/unit -gexit
+
+  build:
+    name: Build (Web export)
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Export Web build
+        run: |
+          export GODOT_BIN="$(command -v godot)"
+          ./export-web.sh
+
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    name: Publish to GitHub Pages
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
