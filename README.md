@@ -191,9 +191,9 @@ New Worlds is currently an experimental project, so the roadmap is intentionally
 
 ### World
 
-* [/] Multiple planets
-* [/] Moons
-* [/] Different planetary types
+* [ ] Multiple planets
+* [ ] Moons
+* [ ] Different planetary types
 * [ ] Procedurally generated planetary systems
 * [ ] Points of interest
 * [ ] Discoverable locations
@@ -203,10 +203,10 @@ New Worlds is currently an experimental project, so the roadmap is intentionally
 * [x] Initial pixel-art visual direction
 * [x] Minimal space backdrop
 * [x] Basic trajectory visualisation
-* [/] Expanded sprite library
+* [ ] Expanded sprite library
 * [ ] Ship sprites and animation
 * [ ] Effects and feedback
-* [/] Sound
+* [ ] Sound
 * [ ] Music
 
 ---
