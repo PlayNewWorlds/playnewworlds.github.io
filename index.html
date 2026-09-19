@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<!--
+	The Web export's page (export_presets.cfg's html/custom_html_shell), based
+	on Godot 4.7's stock shell. Replaces Godot's logo and bare progress bar
+	with a copy of Free Roam's loading cover (menu/main_menu.tscn's
+	LoadingBackdrop/LoadingOverlay): same backdrop, starfield, "Loading..."
+	label and bar, so the page hands over to the main menu without a jump.
+	The starfield sprites, font and spinning Terra (web/terra_loading.gif,
+	from tools/make_terra_loop.py) are copied into boot/ by export-web.sh.
+-->
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<meta name="description" content="New Worlds is a 2D orbital rocket sim where you pilot between worlds, trade, and build a frontier empire.">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="New Worlds">
+		<meta property="og:description" content="Pilot a rocket through a living solar system and settle the frontier.">
+		<meta property="og:url" content="https://playnewworlds.github.io/">
+		<meta property="og:image" content="https://playnewworlds.github.io/icon.webp">
+		<meta property="og:image:width" content="512">
+		<meta property="og:image:height" content="512">
+		<meta property="og:image:type" content="image/webp">
+		<meta property="og:image:alt" content="New Worlds Terra icon">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="New Worlds">
+		<meta name="twitter:description" content="Pilot a rocket through a living solar system and settle the frontier.">
+		<meta name="twitter:image" content="https://playnewworlds.github.io/icon.webp">
+		<link rel="icon" type="image/webp" href="icon.webp">
+		<link rel="apple-touch-icon" href="icon.webp">
+		<title>New Worlds</title>
+		<style>
+@font-face {
+	font-family: 'VT323';
+	src: url('boot/VT323-Regular.ttf') format('truetype');
+	font-display: block;
+}
+
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	color: white;
+	background-color: #2a263e;
+	overflow: hidden;
+	touch-action: none;
+}
+
+#canvas {
+	display: block;
+}
+
+#canvas:focus {
+	outline: none;
+}
+
+#status, #status-sky {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+/* LoadingBackdrop's Background color, via project.godot's boot_splash/bg_color. */
+#status {
+	background-color: #2a263e;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+	/* Everything below is in the game's 1920x1080 canvas units, scaled the
+	   way its canvas_items stretch mode scales them. Set by fitSky(). */
+	--u: 1px;
+}
+
+#status-sky {
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+}
+
+#status-progress, #status-notice {
+	display: none;
+	position: relative;
+}
+
+/* LoadingOverlay's VBox: the Readout label, 16 units above a 280x20 bar.
+   Desktop sizes - UiScale.font_size(20) is (20 + 2) * 2. */
+#status-progress {
+	text-align: center;
+}
+
+/* LabelRow: ui/loading_globe.gd's 55px Terra, 12 units left of the label. */
+#status-row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: calc(12 * var(--u));
+	margin-bottom: calc(16 * var(--u));
+}
+
+#status-globe {
+	width: calc(55 * var(--u));
+	height: calc(55 * var(--u));
+	image-rendering: pixelated;
+}
+
+#status-label {
+	color: #ffe7b3;
+	font-family: 'VT323', monospace;
+	font-size: calc(44 * var(--u));
+	line-height: 1;
+	text-shadow: var(--u) var(--u) 0 rgba(0, 0, 0, 0.7);
+}
+
+#status-bar {
+	width: calc(280 * var(--u));
+	height: calc(20 * var(--u));
+	border-radius: calc(6 * var(--u));
+	background-color: rgba(61, 58, 84, 0.6);
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+#status-fill {
+	width: 0;
+	height: 100%;
+	border-radius: calc(6 * var(--u));
+	background-color: rgba(127, 214, 255, 0.9);
+}
+
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
+		</style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+
+	</head>
+	<body>
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
+
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
+
+		<div id="status">
+			<canvas id="status-sky"></canvas>
+			<div id="status-progress">
+				<div id="status-row">
+					<img id="status-globe" src="boot/terra_loading.gif" alt="">
+					<div id="status-label">Loading...</div>
+				</div>
+				<div id="status-bar"><div id="status-fill"></div></div>
+			</div>
+			<div id="status-notice"></div>
+		</div>
+
+		<script src="index.js"></script>
+		<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":49422948,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_THREADS_ENABLED = false;
+const engine = new Engine(GODOT_CONFIG);
+
+// Keep Esc for the game while fullscreen (systems/fullscreen.gd's F).
+//
+// A browser's own fullscreen swallows Esc to exit, and Esc is the game's
+// back/close key in every menu - so in fullscreen, the one place the game
+// most wants it, pressing it dumped the player back to a windowed canvas
+// instead of closing the panel in front of them. The Keyboard Lock API
+// hands Esc to the page instead; the browser then wants it press-and-held
+// to leave, and F still toggles fullscreen off in one tap.
+//
+// Chromium-only and top-level-only (Firefox and Safari have no
+// navigator.keyboard, and an embed such as itch.io's iframe is refused),
+// so the lock is strictly a bonus - everywhere it isn't granted, Esc goes
+// on exiting fullscreen as before, which is why Fullscreen.is_fullscreen()
+// reads the live window mode rather than trusting a flag.
+(function () {
+	if (!navigator.keyboard || !navigator.keyboard.lock) {
+		return;
+	}
+	document.addEventListener('fullscreenchange', () => {
+		if (document.fullscreenElement) {
+			// Only Esc: every other key is already the page's.
+			navigator.keyboard.lock(['Escape']).catch(() => {});
+		} else {
+			navigator.keyboard.unlock();
+		}
+	});
+}());
+
+// A cut-down sky/starfield.gd: same sprites, layers, weights and scale, lit
+// fully as the main menu's is. Its own RNG, so not the same star positions.
+const bootSky = (function () {
+	const PIXEL_SCALE = 3;
+	const BASE_SIZE = [1920, 1080];
+	const FIELD_MARGIN = 1.15;
+	const COLOR_WEIGHTS = {
+		white: 30, blue: 20, yellow: 18, orange: 12, red: 9, cyan: 6, violet: 3.5, rose: 2.5,
+	};
+	// Deepest first, so array order is draw order.
+	const LAYERS = [
+		{ count: 1400, alpha: [0.4, 0.8, 1.6], shapes: { grain: 46, dust: 38, mote: 16 } },
+		{
+			count: 900, alpha: [0.25, 0.7, 1.8],
+			shapes: { dust: 16, mote: 38, dot: 26, speck: 12, small: 7, medium: 1 },
+		},
+		{
+			count: 300, alpha: [0.45, 1.0, 1.6],
+			shapes: { dot: 28, speck: 14, small: 30, medium: 18, large: 8, bright: 2 },
+		},
+		{
+			count: 70, alpha: [0.8, 1.0, 1.0],
+			shapes: { small: 16, medium: 34, large: 30, bright: 16, giant: 4 },
+		},
+		{ count: 26, alpha: [0.9, 1.0, 1.0], shapes: { bright: 30, giant: 40, supergiant: 30 } },
+	];
+	const GALAXIES = ['galaxy_spiral', 'galaxy_edge'];
+	const SEED = 20260818;
+
+	const canvas = document.getElementById('status-sky');
+	const status = document.getElementById('status');
+	const images = {};
+
+	function sprite(name) {
+		if (!images[name]) {
+			images[name] = new Image();
+			images[name].onload = draw;
+			images[name].src = 'boot/' + name + '.png';
+		}
+		return images[name];
+	}
+
+	// mulberry32
+	function rng(seed) {
+		let a = seed >>> 0;
+		return function () {
+			a = (a + 0x6d2b79f5) >>> 0;
+			let t = a;
+			t = Math.imul(t ^ (t >>> 15), t | 1);
+			t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+			return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+		};
+	}
+
+	function pick(weights, rand) {
+		const keys = Object.keys(weights);
+		let roll = rand() * keys.reduce((sum, key) => sum + weights[key], 0);
+		for (const key of keys) {
+			roll -= weights[key];
+			if (roll < 0) {
+				return key;
+			}
+		}
+		return keys[keys.length - 1];
+	}
+
+	// Rolled once in base units, so a resize rescales the sky rather than
+	// rerolling it.
+	const rand = rng(SEED);
+	const stars = LAYERS.map((layer) => {
+		const out = [];
+		for (let i = 0; i < layer.count; i++) {
+			const name = 'star_' + pick(layer.shapes, rand) + '_' + pick(COLOR_WEIGHTS, rand);
+			const [min, max, bias] = layer.alpha;
+			out.push({
+				image: sprite(name),
+				x: rand() * FIELD_MARGIN,
+				y: rand() * FIELD_MARGIN,
+				alpha: min + (max - min) * Math.pow(rand(), bias),
+			});
+		}
+		return out;
+	});
+	for (let i = 0; i < 2; i++) {
+		stars[0].push({
+			image: sprite(GALAXIES[Math.floor(rand() * GALAXIES.length)]),
+			x: 0.1 + rand() * 0.8,
+			y: 0.1 + rand() * 0.8,
+			alpha: 0.5 + rand() * 0.3,
+		});
+	}
+
+	let pending = false;
+
+	function draw() {
+		if (pending) {
+			return;
+		}
+		pending = true;
+		requestAnimationFrame(() => {
+			pending = false;
+			const ratio = window.devicePixelRatio || 1;
+			const width = Math.round(window.innerWidth * ratio);
+			const height = Math.round(window.innerHeight * ratio);
+			const unit = Math.min(window.innerWidth / BASE_SIZE[0], window.innerHeight / BASE_SIZE[1]);
+			status.style.setProperty('--u', unit + 'px');
+			canvas.width = width;
+			canvas.height = height;
+			const ctx = canvas.getContext('2d');
+			ctx.imageSmoothingEnabled = false;
+			// Whole device pixels per sprite pixel, never a fraction of one.
+			const cell = Math.max(1, Math.round(PIXEL_SCALE * unit * ratio));
+			for (const layer of stars) {
+				for (const star of layer) {
+					if (!star.image.complete || star.image.naturalWidth === 0) {
+						continue;
+					}
+					ctx.globalAlpha = star.alpha;
+					ctx.drawImage(
+						star.image,
+						Math.round(star.x * width),
+						Math.round(star.y * height),
+						star.image.naturalWidth * cell,
+						star.image.naturalHeight * cell
+					);
+				}
+			}
+		});
+	}
+
+	window.addEventListener('resize', draw);
+	draw();
+	return { stop: () => window.removeEventListener('resize', draw) };
+}());
+
+(function () {
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusFill = document.getElementById('status-fill');
+	const statusNotice = document.getElementById('status-notice');
+
+	let initializing = true;
+	let statusMode = '';
+
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			bootSky.stop();
+			statusOverlay.remove();
+			initializing = false;
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
+
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
+
+	function displayFailureNotice(err) {
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('An unknown error occurred.');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
+
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
+
+	if (missing.length !== 0) {
+		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			let serviceWorkerRegistrationPromise;
+			try {
+				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
+			} catch (err) {
+				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
+			}
+			// There's a chance that installing the service worker would fix the issue
+			Promise.race([
+				serviceWorkerRegistrationPromise.then((registration) => {
+					if (registration != null) {
+						return Promise.reject(new Error('Service worker already exists.'));
+					}
+					return registration;
+				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
+				new Promise((resolve) => {
+					setTimeout(() => resolve(), 2000);
+				}),
+			]).then(() => {
+				// Reload if there was no error.
+				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
+			});
+		} else {
+			// Display the message as usual
+			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+			displayFailureNotice(missingMsg + missing.join('\n'));
+		}
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				// Unknown totals (no Content-Length) just leave the bar where it is.
+				if (current > 0 && total > 0) {
+					statusFill.style.width = Math.min(100, (100 * current) / total) + '%';
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+		}, displayFailureNotice);
+	}
+}());
+		</script>
+	</body>
+</html>
+
