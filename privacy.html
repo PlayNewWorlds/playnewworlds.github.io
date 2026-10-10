@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy notice - New Worlds</title>
+<style>
+  :root { --bg: #0d1117; --fg: #e6e6e6; --muted: #9aa4b2; --accent: #7cc4ff; --rule: #2a3340; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #ffffff; --fg: #1d232b; --muted: #5a6573; --accent: #0b5cad; --rule: #d8dee6; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 46rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; }
+  h2 { font-size: 1.2rem; margin-top: 2.2rem; border-top: 1px solid var(--rule); padding-top: 1.2rem; }
+  .meta { color: var(--muted); margin-top: 0; }
+  a { color: var(--accent); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  th, td { text-align: left; vertical-align: top; padding: 0.5rem; border-bottom: 1px solid var(--rule); }
+  .wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+<h1>Privacy notice</h1>
+<p class="meta">New Worlds &middot; last updated 6 October 2026</p>
+
+<p><strong>In short:</strong> you can play New Worlds without giving us anything. There are no
+accounts, no emails, no advertising and no tracking cookies. We only hold data about you if you
+turn on <em>cloud saves</em> or play <em>multiplayer</em>, and even then it is a random ID, your
+saves and what it takes to connect you to other players. You can delete all of it from inside the
+game.</p>
+
+<h2>Who we are</h2>
+<p>New Worlds is made by <strong>Thomas Ashley trading as computerise</strong>, a sole trader
+in the United Kingdom, who is the controller of the data described here. Contact:
+<a href="mailto:privacy@computerise.games">privacy@computerise.games</a>.</p>
+
+<h2>What we hold, why, and for how long</h2>
+<div class="wrap">
+<table>
+<tr><th>When</th><th>What</th><th>Why, and the legal basis</th><th>How long</th></tr>
+<tr>
+  <td>Visiting playnewworlds.com</td>
+  <td>Your IP address and browser details, seen by our hosts (GitHub Pages and Cloudflare) to
+  deliver the page. Page views are counted by Cloudflare Web Analytics, which uses no cookies and
+  no identifier for you.</td>
+  <td>To serve the site and know roughly how many people visit. Legitimate interests.</td>
+  <td>Held by those providers under their own terms; we see only totals.</td>
+</tr>
+<tr>
+  <td>Playing, with nothing turned on</td>
+  <td>Your settings, saves and display name, stored <em>on your device</em> (browser storage, or
+  files on desktop and phone). None of it is sent to us.</td>
+  <td>So the game works. Strictly necessary storage.</td>
+  <td>Until you delete it from your device.</td>
+</tr>
+<tr>
+  <td>Cloud saves (off unless you turn them on)</td>
+  <td>A random player ID and device ID, a hashed device key, your uploaded saves (including names
+  you typed in the game, such as save, ship and faction names), when each device was last seen, and
+  recovery and link codes, stored only as hashes.</td>
+  <td>To keep your saves and move them between your devices. Performing the service you asked
+  for (contract).</td>
+  <td>Until you delete them, or <strong>24 months</strong> after any of your devices was last
+  seen, when everything is erased automatically.</td>
+</tr>
+<tr>
+  <td>Any request to our server</td>
+  <td>Your IP address, used to limit how often one connection can register, guess codes or open
+  sessions. We store only a keyed hash of it, never the address itself.</td>
+  <td>To protect the service from abuse. Legitimate interests.</td>
+  <td>Up to <strong>2 hours</strong>.</td>
+</tr>
+<tr>
+  <td>Multiplayer (by invite only)</td>
+  <td>A player ID and device, as for cloud saves (redeeming an invite creates them), that
+  your player holds an invite, and your <strong>display name</strong>, kept once, against your
+  player ID. For each session: its code (hashed), the in-game date, the number of players and
+  who is in which seat. Connection set-up messages between host and guest, which contain each
+  side's IP address and network details.</td>
+  <td>To connect you to the players you choose to play with. Contract.</td>
+  <td>Connection messages: deleted within minutes of a session ending. Session details:
+  <strong>7 days</strong> after it ends, so the host can reopen it. The invite and your display
+  name: as long as your cloud data.</td>
+</tr>
+<tr>
+  <td>Multiplayer through the relay</td>
+  <td>If your network can't connect directly, game traffic passes through Cloudflare's relay
+  service, using a one-hour login recorded against your player ID. A player whose login carries
+  far more traffic than a game needs is blocked from the relay.</td>
+  <td>To connect players whose networks block a direct link, and to stop the relay being
+  misused. Contract and legitimate interests.</td>
+  <td>The login: until it expires, an hour later. A block: as long as your cloud data.</td>
+</tr>
+</table>
+</div>
+
+<h2>What other players see</h2>
+<p>Players in a session with you see your <strong>display name</strong>, your ship and its colour,
+where you are in the game, and what you do in their world. Multiplayer connects players directly,
+so the host and the guests connected to them can also see each other's <strong>IP
+address</strong>; guests don't connect to each other. Choose a display name that isn't your real
+name.</p>
+<p>Other players' games remember you by your player ID, not your name: their saves, cloud saves
+and logs hold the ID, and look your name up from us when they show it (keeping a copy on their
+device so it still shows offline, refreshed whenever they're online). So if you change your name
+on the Multiplayer screen, they see the new one; if you delete your cloud data, your name is gone
+from us and they see "Former player" instead. Saves made by an older version of the game may still
+contain names until the game is updated and the save is written again.</p>
+
+<h2>Who else handles it</h2>
+<p><strong>Cloudflare</strong> runs our server, database, relay and site analytics, and
+<strong>GitHub</strong> hosts the website. They act on our instructions under their data
+processing terms. Both may process data outside the UK, including in the United States, under
+the safeguards UK law requires for such transfers. We don't sell your data, show advertising,
+build profiles or make automated decisions about you.</p>
+
+<h2>Children</h2>
+<p>We don't ask for names, emails, ages or locations. Cloud saves are off by default and
+multiplayer is invite-only. If you're under 13, ask a parent or guardian before turning on cloud
+saves or joining multiplayer.</p>
+
+<h2>Your rights</h2>
+<p>You can ask us for a copy of your data, to correct it, to delete it, to restrict or object to
+how we use it, or to have it in a portable form.</p>
+<ul>
+  <li><strong>Delete everything:</strong> in the game, go to Settings &rarr; Profile &rarr;
+  <em>Delete my cloud data</em>. It erases your player, every device on it and every cloud save at
+  once. Saves on your device are kept.</li>
+  <li><strong>Anything else</strong>, or if you've lost access to the game: email
+  <a href="mailto:privacy@computerise.games">privacy@computerise.games</a> with your Player ID
+  (shown in Settings &rarr; Profile). We'll reply within one month.</li>
+</ul>
+<p>If you're unhappy with how we've handled your data, you can complain to the Information
+Commissioner's Office: <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk/make-a-complaint</a>.</p>
+
+<h2>Changes</h2>
+<p>If this notice changes, the date at the top changes with it. If a change affects data we
+already hold, we'll say so in the game before it takes effect.</p>
+</main>
+</body>
+</html>
